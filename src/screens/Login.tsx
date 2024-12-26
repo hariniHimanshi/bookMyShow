@@ -7,9 +7,11 @@ import {
   TextInput,
   TouchableOpacity,
   SafeAreaView,
+  Alert,
 } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../App";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -17,15 +19,37 @@ export default function Login() {
 
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
-  const handleLogin = () => {
-    console.log("Login attempted with:", email, password);
-    if (email === "harini@gmail.com" && password === "password") {
-        console.log("Login successful");
-        // Navigate to the home page
-        navigation.navigate("Home");
-    } else {
-        console.log("Login failed");
+  const handleLogin = async () => {
+    // console.log("Login attempted with:", email, password);
+    // if (email === "harini@gmail.com" && password === "password") {
+    //     console.log("Login successful");
+    //     // Navigate to the home page
+    //     navigation.navigate("Home");
+    // } else {
+    //     console.log("Login failed");
+    // }
+    try {
+      // Retrieve users from AsyncStorage
+      const storedUsers = await AsyncStorage.getItem("registeredUsers");
+      const users = storedUsers ? JSON.parse(storedUsers) : [];
+
+      // Check if user exists
+      const user = users.find((user: { email: string; password: string }) => user.email === email && user.password === password);
+      if (user) {
+        Alert.alert("Success", "Login successful");
+        navigation.navigate("Home", { username: user.username });
+      } else {
+        Alert.alert("Error", "Invalid email or password");
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
     }
+  };
+
+  // //add
+  const handleSignUp = () => {
+    // Navigate to the sign-up page
+    navigation.navigate("Register");
   };
 
   return (
@@ -52,6 +76,12 @@ export default function Login() {
 
         <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
           <Text style={styles.loginButtonText}>Login</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity style={styles.signUpContainer} onPress={handleSignUp}>
+          <Text style={styles.signUpText}>
+            Don't have an account? <Text style={styles.signUpLink}>Sign up</Text>
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -95,6 +125,17 @@ const styles = StyleSheet.create({
   loginButtonText: {
     color: "#fff",
     fontSize: 16,
+    fontWeight: "bold",
+  },
+  signUpContainer: {
+    marginTop: 10,
+  },
+  signUpText: {
+    fontSize: 14,
+    color: "#555",
+  },
+  signUpLink: {
+    color: "#E31E72",
     fontWeight: "bold",
   },
 });
