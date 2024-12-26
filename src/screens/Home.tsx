@@ -5,10 +5,13 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Feather } from '@expo/vector-icons';
 import { useCartStore } from '../store';
+import { useRoute } from '@react-navigation/native'; // Import useRoute
 
 const Home = () => {
   const [events, setEvents] = useState<EventCardType[]>([]);
   const { itemsSelected } = useCartStore();
+  const route = useRoute(); // Use route to access parameters
+  const { username } = route.params as { username: string }; // Extract username
 
   const fetchEvents = async () => {
     try {
@@ -41,6 +44,9 @@ const Home = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+            <View style={styles.topBar}>
+        <Text style={styles.usernameText}>Welcome, {username}!</Text>
+      </View>
       <ScrollView style={styles.container}>
         {events.map((event, index) => (
           <EventCard 
@@ -71,6 +77,16 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+  },
+  topBar: {
+    backgroundColor: '#2ecc71',
+    padding: 10,
+    alignItems: 'center',
+  },
+  usernameText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   floatingButton: {
     position: 'absolute',
