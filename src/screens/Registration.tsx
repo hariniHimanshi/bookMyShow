@@ -1,9 +1,21 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity, SafeAreaView, KeyboardAvoidingView, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  Alert,
+  TouchableOpacity,
+  SafeAreaView,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet
+} from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const RegisterScreen = ({ navigation }: any) => {
+  // State for form data
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -11,9 +23,11 @@ const RegisterScreen = ({ navigation }: any) => {
     confirmPassword: '',
   });
 
+  // State for password visibility toggle
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
 
+  // State for form errors
   const [errors, setErrors] = useState({
     username: '',
     email: '',
@@ -21,6 +35,7 @@ const RegisterScreen = ({ navigation }: any) => {
     confirmPassword: '',
   });
 
+  // Function to validate form inputs
   const validateForm = () => {
     let valid = true;
     const newErrors = { username: '', email: '', password: '', confirmPassword: '' };
@@ -50,111 +65,119 @@ const RegisterScreen = ({ navigation }: any) => {
     return valid;
   };
 
+  // Function to handle user registration
   const handleRegister = async () => {
     try {
       if (validateForm()) {
-        // // Store user data in global array or state
-        // registeredUsers.push({ ...formData });
-        // Alert.alert('Success', 'User registered successfully!');
-        // navigation.navigate('Login');
-        const storedUsers = await AsyncStorage.getItem("registeredUsers");
+        const storedUsers = await AsyncStorage.getItem('registeredUsers');
         const users = storedUsers ? JSON.parse(storedUsers) : [];
         if (users.some((user: { email: string }) => user.email === formData.email)) {
-          Alert.alert("Error", "Email is already registered");
+          Alert.alert('Error', 'Email is already registered');
           return;
         }
         // Add new user
         const updatedUsers = [...users, formData];
-        await AsyncStorage.setItem("registeredUsers", JSON.stringify(updatedUsers));
+        await AsyncStorage.setItem('registeredUsers', JSON.stringify(updatedUsers));
 
-        Alert.alert("Success", "User registered successfully");
-        navigation.navigate("Login");
+        Alert.alert('Success', 'User registered successfully');
+        navigation.navigate('Login');
       }
     } catch (error) {
-      console.error("Error during registration:", error);
+      console.error('Error during registration:', error);
     }
+  };
 
-};
-
-return (
-  <SafeAreaView style={styles.container}>
-    <KeyboardAvoidingView
-      style={styles.inner}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <Text style={styles.title}>Create an Account</Text>
-
-      <Text style={styles.label}>Username</Text>
-      <TextInput
-        style={[styles.input, errors.username ? styles.inputError : null]}
-        placeholder="Enter username"
-        value={formData.username}
-        onChangeText={(text) => setFormData({ ...formData, username: text })}
-      />
-      {errors.username ? <Text style={styles.error}>{errors.username}</Text> : null}
-
-      <Text style={styles.label}>Email</Text>
-      <TextInput
-        style={[styles.input, errors.email ? styles.inputError : null]}
-        placeholder="Enter email"
-        value={formData.email}
-        onChangeText={(text) => setFormData({ ...formData, email: text })}
-        keyboardType="email-address"
-      />
-      {errors.email ? <Text style={styles.error}>{errors.email}</Text> : null}
-
-      <Text style={styles.label}>Password</Text>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={[styles.input, errors.password ? styles.inputError : null]}
-          placeholder="Enter password"
-          value={formData.password}
-          onChangeText={(text) => setFormData({ ...formData, password: text })}
-          secureTextEntry={!passwordVisible}
-        />
-        <TouchableOpacity
-          style={styles.togglePasswordButton}
-          onPress={() => setPasswordVisible(!passwordVisible)}
-        >
-          <FontAwesome name={passwordVisible ? 'eye-slash' : 'eye'} size={20} color="#E31E72" />
-        </TouchableOpacity>
-      </View>
-      {errors.password ? <Text style={styles.error}>{errors.password}</Text> : null}
-
-      <Text style={styles.label}>Confirm Password</Text>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={[styles.input, errors.confirmPassword ? styles.inputError : null]}
-          placeholder="Confirm password"
-          value={formData.confirmPassword}
-          onChangeText={(text) => setFormData({ ...formData, confirmPassword: text })}
-          secureTextEntry={!confirmPasswordVisible}
-        />
-        <TouchableOpacity
-          style={styles.togglePasswordButton}
-          onPress={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
-        >
-          <FontAwesome name={passwordVisible ? 'eye-slash' : 'eye'} size={20} color="#E31E72" />
-        </TouchableOpacity>
-      </View>
-      {errors.confirmPassword ? <Text style={styles.error}>{errors.confirmPassword}</Text> : null}
-
-
-      <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-        <Text style={styles.registerButtonText}>Register</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.loginRedirect}
-        onPress={() => navigation.navigate('Login')}
+  return (
+    <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView
+        style={styles.flexContainer}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <Text style={styles.loginRedirectText}>
-          Already have an account? <Text style={styles.loginLink}>Login here</Text>
-        </Text>
-      </TouchableOpacity>
-    </KeyboardAvoidingView>
-  </SafeAreaView>
-);
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
+          <Text style={styles.title}>Create an Account</Text>
+
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>Username</Text>
+            <TextInput
+              style={[styles.input, errors.username ? styles.inputError : null]}
+              placeholder="Enter username"
+              value={formData.username}
+              onChangeText={(text) => setFormData({ ...formData, username: text })}
+            />
+            {errors.username ? <Text style={styles.error}>{errors.username}</Text> : null}
+          </View>
+
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>Email</Text>
+            <TextInput
+              style={[styles.input, errors.email ? styles.inputError : null]}
+              placeholder="Enter email"
+              value={formData.email}
+              onChangeText={(text) => setFormData({ ...formData, email: text })}
+              keyboardType="email-address"
+            />
+            {errors.email ? <Text style={styles.error}>{errors.email}</Text> : null}
+          </View>
+
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>Password</Text>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={[styles.input, errors.password ? styles.inputError : null]}
+                placeholder="Enter password"
+                value={formData.password}
+                onChangeText={(text) => setFormData({ ...formData, password: text })}
+                secureTextEntry={!passwordVisible}
+              />
+              <TouchableOpacity
+                style={styles.togglePasswordButton}
+                onPress={() => setPasswordVisible(!passwordVisible)}
+              >
+                <FontAwesome name={passwordVisible ? 'eye-slash' : 'eye'} size={20} color="#E31E72" />
+              </TouchableOpacity>
+            </View>
+            {errors.password ? <Text style={styles.error}>{errors.password}</Text> : null}
+          </View>
+
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>Confirm Password</Text>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={[styles.input, errors.confirmPassword ? styles.inputError : null]}
+                placeholder="Confirm password"
+                value={formData.confirmPassword}
+                onChangeText={(text) => setFormData({ ...formData, confirmPassword: text })}
+                secureTextEntry={!confirmPasswordVisible}
+              />
+              <TouchableOpacity
+                style={styles.togglePasswordButton}
+                onPress={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
+              >
+                <FontAwesome name={confirmPasswordVisible ? 'eye-slash' : 'eye'} size={20} color="#E31E72" />
+              </TouchableOpacity>
+            </View>
+            {errors.confirmPassword ? <Text style={styles.error}>{errors.confirmPassword}</Text> : null}
+          </View>
+
+          <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
+            <Text style={styles.registerButtonText}>Register</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.loginRedirect}
+            onPress={() => navigation.navigate('Login')}
+          >
+            <Text style={styles.loginRedirectText}>
+              Already have an account? <Text style={styles.loginLink}>Login here</Text>
+            </Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
 };
 
 const styles = StyleSheet.create({
@@ -162,11 +185,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f7f7f7',
   },
-  inner: {
-    padding: 30,
-    paddingTop: 80,
+  flexContainer: {
     flex: 1,
-    justifyContent: 'flex-start',
+  },
+  scrollContent: {
+    padding: 20,
+    paddingTop: 40,
   },
   title: {
     fontSize: 28,
@@ -175,16 +199,18 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     textAlign: 'center',
   },
+  fieldContainer: {
+    marginBottom: 20,
+  },
   label: {
     fontSize: 16,
-    marginBottom: 5,
+    marginBottom: 8,
     color: '#333',
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     position: 'relative',
-    marginBottom: 15,
   },
   togglePasswordButton: {
     position: 'absolute',
@@ -200,15 +226,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     backgroundColor: '#fff',
     fontSize: 16,
-    width: '100%',  // Ensure the input takes up full width within the container
-    paddingRight: 40,  // Space for the icon
+    width: '100%',
+    paddingRight: 40, 
   },
   inputError: {
     borderColor: 'red',
   },
   error: {
     color: 'red',
-    marginBottom: 10,
+    marginTop: 5,
     fontSize: 14,
   },
   registerButton: {
@@ -238,7 +264,4 @@ const styles = StyleSheet.create({
   },
 });
 
-const registeredUsers: Array<{ username: string; email: string; password: string }> = [];
-
 export default RegisterScreen;
-export { registeredUsers };

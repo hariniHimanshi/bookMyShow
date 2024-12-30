@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Feather } from '@expo/vector-icons';
 import { useCartStore } from '../store';
-import { useRoute } from '@react-navigation/native'; // Import useRoute
+import { useRoute } from '@react-navigation/native'; 
 
 const Home = () => {
   const [events, setEvents] = useState<EventCardType[]>([]);
@@ -13,6 +13,7 @@ const Home = () => {
   const route = useRoute(); // Use route to access parameters
   const { username } = route.params as { username: string }; // Extract username
 
+  // Fetch events from API
   const fetchEvents = async () => {
     try {
       const fetchedEvents: EventCardType[] = [];

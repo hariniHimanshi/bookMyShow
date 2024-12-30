@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity } from "react-native";
 import { Feather } from '@expo/vector-icons';
 
+// Type definitions for props passed to the EventCard component
 export type EventCardProps = {
   name: string;
   date: string;
@@ -10,6 +11,7 @@ export type EventCardProps = {
   incrementItemsSelected: Function;
 };
 
+// Type definitions for the EventCard data type
 export type EventCardType = {
   name: string;
   date: string;
@@ -17,9 +19,9 @@ export type EventCardType = {
   price: number;
 };
 
+// The EventCard component displays event details and allows users to add the event to their cart
 const EventCard = ({ name, date, image, price, incrementItemsSelected }: EventCardProps) => {
   const handleAddToCart = () => {
-    // TODO: Implement cart functionality
     console.log('Added to cart:', name);
     incrementItemsSelected();
   };

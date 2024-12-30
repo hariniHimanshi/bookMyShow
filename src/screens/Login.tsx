@@ -19,15 +19,8 @@ export default function Login() {
 
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
+  // Function to handle login
   const handleLogin = async () => {
-    // console.log("Login attempted with:", email, password);
-    // if (email === "harini@gmail.com" && password === "password") {
-    //     console.log("Login successful");
-    //     // Navigate to the home page
-    //     navigation.navigate("Home");
-    // } else {
-    //     console.log("Login failed");
-    // }
     try {
       // Retrieve users from AsyncStorage
       const storedUsers = await AsyncStorage.getItem("registeredUsers");
@@ -46,7 +39,7 @@ export default function Login() {
     }
   };
 
-  // //add
+ // Function to handle navigation to the Sign-Up screen
   const handleSignUp = () => {
     // Navigate to the sign-up page
     navigation.navigate("Register");
