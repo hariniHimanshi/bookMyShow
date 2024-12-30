@@ -45,7 +45,7 @@ const Home = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-            <View style={styles.topBar}>
+        <View style={styles.topBar}>
         <Text style={styles.usernameText}>Welcome, {username}!</Text>
       </View>
       <ScrollView style={styles.container}>
